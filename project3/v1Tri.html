@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="initShaders.js"></script>
+
+<script id="vertex-shader" type="x-shader/x-vertex">#version 300 es
+precision mediump float;
+
+uniform float N;
+
+void main() {
+    float angle = float(gl_VertexID) * 6.283185 / N; // angle = ID * 2π / N
+    vec2 position = vec2(cos(angle), sin(angle));
+    gl_Position = vec4(position, 0.0, 1.0);
+}
+</script>
+        
+        <script id="fragment-shader" type="x-shader/x-fragment">#version 300 es
+	precision mediump float;
+
+	out vec4 fColor;
+	void main() {
+                fColor = vec4(1.0, 1.0, 0.0, 1.0);
+            }
+        </script>
+
+<script>
+window.onload = () => {
+    var canvas = document.getElementById("webgl");
+    var gl = canvas.getContext("webgl2");
+
+    gl.clearColor(0.1, 0.1, 0.1, 1.0);
+
+    var program = initShaders(gl, "vertex-shader", "fragment-shader");
+    gl.useProgram(program); // ✅ fixed variable name
+
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+
+    const N = 3;
+    var uN = gl.getUniformLocation(program, "N");
+    gl.uniform1f(uN, N);
+
+    gl.clear(gl.COLOR_BUFFER_BIT); // ✅ fixed gl typo
+    gl.drawArrays(gl.LINE_LOOP, 0, N);
+};
+</script>
+
+    </head>
+
+    <body>
+        <canvas id="webgl" width="512" height="512"></canvas>
+    </body>
+</html>
